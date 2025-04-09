@@ -1,0 +1,28 @@
+{
+  "name": "fullstackopen-part-13",
+  "version": "1.0.0",
+  "description": "bloglistApp-psql",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BorisBanchev/FullStackOpen-part-13.git"
+  },
+  "author": "Boris Banchev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BorisBanchev/FullStackOpen-part-13/issues"
+  },
+  "homepage": "https://github.com/BorisBanchev/FullStackOpen-part-13#readme",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "pg": "^8.14.1",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
