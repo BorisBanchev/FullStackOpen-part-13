@@ -1,6 +1,7 @@
 {
   "name": "fullstackopen-part-13",
   "version": "1.0.0",
+  "type": "module",
   "description": "bloglistApp-psql",
   "main": "index.js",
   "scripts": {
