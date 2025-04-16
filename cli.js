@@ -1,4 +1,4 @@
-import sequelize from "./connection_db.js";
+import { sequelize } from "./utils/db.js";
 import Blog from "./models/Blog.js";
 
 const main = async () => {
