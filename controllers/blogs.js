@@ -36,4 +36,17 @@ blogsRouter.delete("/:id", blogFinder, async (req, res) => {
   res.status(204).end();
 });
 
+blogsRouter.put("/:id", blogFinder, async (req, res) => {
+  if (req.blog) {
+    try {
+      const { likes } = req.body;
+      req.blog.likes = likes;
+      await req.blog.save();
+      res.json(req.blog);
+    } catch (error) {
+      res.status(400).json({ error: "Blog not found" });
+    }
+  }
+});
+
 export default blogsRouter;
