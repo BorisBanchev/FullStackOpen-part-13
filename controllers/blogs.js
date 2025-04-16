@@ -19,13 +19,9 @@ blogsRouter.get("/", async (req, res) => {
 });
 
 blogsRouter.post("/", async (req, res) => {
-  try {
-    const blog = await Blog.create(req.body);
-    console.log(blog.toJSON());
-    res.json(blog);
-  } catch (error) {
-    return res.status(400).json({ error });
-  }
+  const blog = await Blog.create(req.body);
+  console.log(blog.toJSON());
+  res.json(blog);
 });
 
 blogsRouter.delete("/:id", blogFinder, async (req, res) => {
@@ -38,14 +34,12 @@ blogsRouter.delete("/:id", blogFinder, async (req, res) => {
 
 blogsRouter.put("/:id", blogFinder, async (req, res) => {
   if (req.blog) {
-    try {
-      const { likes } = req.body;
-      req.blog.likes = likes;
-      await req.blog.save();
-      res.json(req.blog);
-    } catch (error) {
-      res.status(400).json({ error: "Blog not found" });
-    }
+    const { likes } = req.body;
+    req.blog.likes = likes;
+    await req.blog.save();
+    res.json(req.blog);
+  } else {
+    res.status(404).json({ error: "Blog not found!" });
   }
 });
 
