@@ -1,5 +1,7 @@
 import express from "express";
-import Blog from "../models/Blog.js";
+import jwt from "jsonwebtoken";
+import { SECRET } from "../utils/config.js";
+import { Blog, User } from "../models/index.js";
 
 const blogsRouter = express.Router();
 
@@ -8,9 +10,29 @@ const blogFinder = async (req, res, next) => {
   next();
 };
 
+const tokenExtractor = (req, res, next) => {
+  const authorization = req.get("authorization");
+  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
+    try {
+      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
+    } catch (error) {
+      return res.status(401).json({ error: "Invalid token!" });
+    }
+  } else {
+    return res.status(401).json({ error: "Token missing!" });
+  }
+  next();
+};
+
 blogsRouter.get("/", async (req, res) => {
   try {
-    const blogs = await Blog.findAll();
+    const blogs = await Blog.findAll({
+      attributes: { exclude: ["userId"] },
+      include: {
+        model: User,
+        attributes: ["name"],
+      },
+    });
     res.json(blogs);
   } catch (error) {
     console.error("Error fetching blogs:", error);
@@ -18,14 +40,16 @@ blogsRouter.get("/", async (req, res) => {
   }
 });
 
-blogsRouter.post("/", async (req, res, next) => {
+blogsRouter.post("/", tokenExtractor, async (req, res, next) => {
   try {
+    const user = await User.findByPk(req.decodedToken.id);
     const { title, url } = req.body;
 
     if (!title || !url) {
       throw new Error("Title and URL are required fields!");
     }
-    const blog = await Blog.create(req.body);
+
+    const blog = await Blog.create({ ...req.body, userId: user.id });
     console.log(blog.toJSON());
     res.json(blog);
   } catch (error) {

@@ -1,26 +1,18 @@
 import express from "express";
-import { User } from "../models/index.js";
+import { User, Blog } from "../models/index.js";
 import bcrypt from "bcrypt";
-import moment from "moment-timezone";
 
 const usersRouter = express.Router();
 
 usersRouter.get("/", async (req, res) => {
-  const users = await User.findAll();
-  const usersWithTimezone = users.map((user) => {
-    const createdAt = moment(user.createdAt).tz("UTC+03:00").format();
-    const updatedAt = moment(user.updatedAt).tz("UTC+03:00").format();
-
-    return {
-      id: user.id,
-      username: user.username,
-      name: user.name,
-      createdAt,
-      updatedAt,
-    };
+  const users = await User.findAll({
+    attributes: { exclude: ["passwordHash"] },
+    include: {
+      model: Blog,
+      attributes: { exclude: ["userId"] },
+    },
   });
-
-  res.json(usersWithTimezone);
+  res.json(users);
 });
 
 usersRouter.post("/", async (req, res, next) => {
@@ -34,15 +26,8 @@ usersRouter.post("/", async (req, res, next) => {
       name: name,
       passwordHash: passwordHash,
     });
-    const createdAt = moment(user.createdAt).tz("UTC+03:00").format();
-    const updatedAt = moment(user.updatedAt).tz("UTC+03:00").format();
-    res.json({
-      id: user.id,
-      username: user.username,
-      name: user.name,
-      createdAt,
-      updatedAt,
-    });
+
+    res.json(user);
   } catch (error) {
     next(error);
   }
@@ -73,16 +58,8 @@ usersRouter.put("/:username", async (req, res, next) => {
 
     userToChange.username = newUsername;
 
-    const createdAt = moment(userToChange.createdAt).tz("UTC+03:00").format();
-    const updatedAt = moment(userToChange.updatedAt).tz("UTC+03:00").format();
     await userToChange.save();
-    res.json({
-      id: userToChange.id,
-      username: userToChange.username,
-      name: userToChange.name,
-      createdAt,
-      updatedAt,
-    });
+    res.json(userToChange);
   } catch (error) {
     next(error);
   }
