@@ -29,9 +29,18 @@ blogsRouter.get("/", async (req, res) => {
     const search = req.query.search;
     const where = search
       ? {
-          title: {
-            [Op.iLike]: `%${search}%`,
-          },
+          [Op.or]: [
+            {
+              title: {
+                [Op.iLike]: `%${search}%`,
+              },
+            },
+            {
+              author: {
+                [Op.iLike]: `%${search}%`,
+              },
+            },
+          ],
         }
       : {};
 
