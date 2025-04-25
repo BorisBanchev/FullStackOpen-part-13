@@ -2,7 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { SECRET } from "../utils/config.js";
 import { Blog, User } from "../models/index.js";
-import { Op } from "sequelize";
+import { Op, fn, col } from "sequelize";
 const blogsRouter = express.Router();
 
 const blogFinder = async (req, res, next) => {
