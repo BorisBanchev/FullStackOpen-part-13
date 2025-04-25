@@ -14,6 +14,11 @@ User.init(
     username: {
       type: DataTypes.STRING,
       unique: true,
+      validate: {
+        isEmail: {
+          msg: "Validation isEmail on username failed",
+        },
+      },
       allowNull: false,
     },
     name: {

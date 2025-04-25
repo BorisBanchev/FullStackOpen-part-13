@@ -15,6 +15,10 @@ app.use((error, req, res, next) => {
   if (error.name === "ValidationError") {
     return res.status(400).json({ error: error.message });
   }
+  if (error.name === "SequelizeValidationError") {
+    const validationErrors = error.errors.map((err) => err.message);
+    return res.status(400).json({ error: validationErrors });
+  }
   res.status(400).json({ error: error.message });
 });
 
