@@ -3,11 +3,12 @@ import { PORT } from "./utils/config.js";
 import "express-async-errors";
 import { connectToDatabase } from "./utils/db.js";
 import blogsRouter from "./controllers/blogs.js";
+import usersRouter from "./controllers/users.js";
 
 const app = express();
 app.use(express.json());
 app.use("/api/blogs", blogsRouter);
-
+app.use("/api/users", usersRouter);
 // error middleware
 app.use((error, req, res, next) => {
   console.error(error.message);

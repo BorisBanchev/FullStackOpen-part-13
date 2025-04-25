@@ -1,7 +1,13 @@
 import { Sequelize } from "sequelize";
 import { DATABASE_URL } from "./config.js";
 
-export const sequelize = new Sequelize(DATABASE_URL);
+export const sequelize = new Sequelize(DATABASE_URL, {
+  dialect: "postgres",
+  dialectOptions: {
+    useUTC: false,
+  },
+  timezone: "+03:00",
+});
 
 export const connectToDatabase = async () => {
   try {

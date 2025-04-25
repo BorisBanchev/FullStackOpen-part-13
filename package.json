@@ -18,9 +18,11 @@
   },
   "homepage": "https://github.com/BorisBanchev/FullStackOpen-part-13#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "express": "^4.16.2",
     "express-async-errors": "^3.1.1",
+    "moment-timezone": "^0.5.48",
     "pg": "^8.14.1",
     "sequelize": "^6.37.7"
   },
