@@ -18,10 +18,19 @@ blogsRouter.get("/", async (req, res) => {
   }
 });
 
-blogsRouter.post("/", async (req, res) => {
-  const blog = await Blog.create(req.body);
-  console.log(blog.toJSON());
-  res.json(blog);
+blogsRouter.post("/", async (req, res, next) => {
+  try {
+    const { title, url } = req.body;
+
+    if (!title || !url) {
+      throw new Error("Title and URL are required fields!");
+    }
+    const blog = await Blog.create(req.body);
+    console.log(blog.toJSON());
+    res.json(blog);
+  } catch (error) {
+    next(error);
+  }
 });
 
 blogsRouter.delete("/:id", blogFinder, async (req, res) => {
@@ -32,14 +41,22 @@ blogsRouter.delete("/:id", blogFinder, async (req, res) => {
   res.status(204).end();
 });
 
-blogsRouter.put("/:id", blogFinder, async (req, res) => {
-  if (req.blog) {
-    const { likes } = req.body;
-    req.blog.likes = likes;
-    await req.blog.save();
-    res.json(req.blog);
-  } else {
-    res.status(404).json({ error: "Blog not found!" });
+blogsRouter.put("/:id", blogFinder, async (req, res, next) => {
+  try {
+    if (req.blog) {
+      const { likes } = req.body;
+
+      if (likes < 0) {
+        throw new Error("Likes can't be negative!");
+      }
+      req.blog.likes = likes;
+      await req.blog.save();
+      res.json(req.blog);
+    } else {
+      res.status(404).json({ error: "Blog not found!" });
+    }
+  } catch (error) {
+    next(error);
   }
 });
 

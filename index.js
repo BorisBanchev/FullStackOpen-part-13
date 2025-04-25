@@ -11,6 +11,9 @@ app.use("/api/blogs", blogsRouter);
 // error middleware
 app.use((error, req, res, next) => {
   console.error(error.message);
+  if (error.name === "ValidationError") {
+    return res.status(400).json({ error: error.message });
+  }
   res.status(400).json({ error: error.message });
 });
 
