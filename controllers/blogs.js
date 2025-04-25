@@ -57,12 +57,17 @@ blogsRouter.post("/", tokenExtractor, async (req, res, next) => {
   }
 });
 
-blogsRouter.delete("/:id", blogFinder, async (req, res) => {
+blogsRouter.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
   if (req.blog) {
+    if (req.blog.userId !== req.decodedToken.id) {
+      return res
+        .status(401)
+        .json({ error: "Not authorized to delete this blog!" });
+    }
     await req.blog.destroy();
-    res.json(req.blog);
+    return res.json(req.blog);
   }
-  res.status(204).end();
+  res.status(404).json({ error: "Blog not found!" });
 });
 
 blogsRouter.put("/:id", blogFinder, async (req, res, next) => {
