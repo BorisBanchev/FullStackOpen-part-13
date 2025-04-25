@@ -2,7 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { SECRET } from "../utils/config.js";
 import { Blog, User } from "../models/index.js";
-
+import { Op } from "sequelize";
 const blogsRouter = express.Router();
 
 const blogFinder = async (req, res, next) => {
@@ -26,12 +26,22 @@ const tokenExtractor = (req, res, next) => {
 
 blogsRouter.get("/", async (req, res) => {
   try {
+    const search = req.query.search;
+    const where = search
+      ? {
+          title: {
+            [Op.iLike]: `%${search}%`,
+          },
+        }
+      : {};
+
     const blogs = await Blog.findAll({
       attributes: { exclude: ["userId"] },
       include: {
         model: User,
         attributes: ["name"],
       },
+      where,
     });
     res.json(blogs);
   } catch (error) {
