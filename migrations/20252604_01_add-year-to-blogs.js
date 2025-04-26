@@ -1,0 +1,17 @@
+import { DataTypes } from "sequelize";
+
+export const up = async ({ context: queryInterface }) => {
+  await queryInterface.addColumn("blogs", "year", {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      min: 1991,
+      max: new Date().getFullYear(),
+    },
+    defaultValue: new Date().getFullYear(),
+  });
+};
+
+export const down = async ({ context: queryInterface }) => {
+  await queryInterface.removeColumn("blogs", "year");
+};

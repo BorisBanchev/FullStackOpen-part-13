@@ -70,9 +70,14 @@ blogsRouter.post("/", tokenExtractor, async (req, res, next) => {
     }
 
     const blog = await Blog.create({ ...req.body, userId: user.id });
-    console.log(blog.toJSON());
+
     res.json(blog);
   } catch (error) {
+    if (error.name === "SequelizeValidationError") {
+      return res
+        .status(400)
+        .json({ error: error.errors.map((e) => e.message) });
+    }
     next(error);
   }
 });
