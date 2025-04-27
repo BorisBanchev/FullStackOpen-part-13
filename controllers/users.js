@@ -1,5 +1,5 @@
 import express from "express";
-import { User, Blog } from "../models/index.js";
+import { User, Blog, ReadingList } from "../models/index.js";
 import bcrypt from "bcrypt";
 
 const usersRouter = express.Router();
@@ -13,6 +13,32 @@ usersRouter.get("/", async (req, res) => {
     },
   });
   res.json(users);
+});
+
+usersRouter.get("/:id", async (req, res, next) => {
+  try {
+    const user = await User.findByPk(req.params.id, {
+      attributes: ["name", "username"],
+      include: {
+        model: Blog,
+        as: "readingList",
+        attributes: ["id", "url", "title", "author", "likes", "year"],
+        through: { attributes: [] },
+      },
+    });
+    if (!user) {
+      res.status(404).json({ error: "User not found!" });
+    }
+    const response = {
+      name: user.name,
+      username: user.username,
+      readings: user.readingList,
+    };
+
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
 });
 
 usersRouter.post("/", async (req, res, next) => {
