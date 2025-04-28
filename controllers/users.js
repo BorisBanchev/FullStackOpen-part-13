@@ -23,7 +23,7 @@ usersRouter.get("/:id", async (req, res, next) => {
         model: Blog,
         as: "readingList",
         attributes: ["id", "url", "title", "author", "likes", "year"],
-        through: { attributes: [] },
+        through: { attributes: ["id", "read"] },
       },
     });
     if (!user) {
@@ -32,7 +32,12 @@ usersRouter.get("/:id", async (req, res, next) => {
     const response = {
       name: user.name,
       username: user.username,
-      readings: user.readingList,
+      readings: user.readingList.map((blog) => {
+        const blogData = blog.toJSON();
+        blogData.readinglists = blogData.reading_lists;
+        delete blogData.reading_lists;
+        return blogData;
+      }),
     };
 
     res.json(response);
