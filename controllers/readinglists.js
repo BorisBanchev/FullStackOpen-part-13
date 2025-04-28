@@ -1,5 +1,6 @@
 import express from "express";
 import { ReadingList, Blog, User } from "../models/index.js";
+import { tokenExtractor } from "../middleware/tokenExtractor.js";
 
 const readingListRouter = express.Router();
 
@@ -18,6 +19,32 @@ readingListRouter.post("/", async (req, res, next) => {
       blogId: blog_id,
     });
     res.status(201).json(readingListEntry);
+  } catch (error) {
+    next(error);
+  }
+});
+
+readingListRouter.put("/:id", tokenExtractor, async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const { read } = req.body;
+
+    const readingListEntry = await ReadingList.findByPk(id);
+
+    if (!readingListEntry) {
+      return res.status(404).json({ error: "Reading list entry not found!" });
+    }
+
+    if (readingListEntry.userId !== req.decodedToken.id) {
+      return res
+        .status(401)
+        .json({ error: "You are not authorized to update this entry!" });
+    }
+
+    readingListEntry.read = read;
+    await readingListEntry.save();
+
+    res.json(readingListEntry);
   } catch (error) {
     next(error);
   }

@@ -3,24 +3,11 @@ import jwt from "jsonwebtoken";
 import { SECRET } from "../utils/config.js";
 import { Blog, User } from "../models/index.js";
 import { Op, fn, col } from "sequelize";
+import { tokenExtractor } from "../middleware/tokenExtractor.js";
 const blogsRouter = express.Router();
 
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id);
-  next();
-};
-
-const tokenExtractor = (req, res, next) => {
-  const authorization = req.get("authorization");
-  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
-    try {
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
-    } catch (error) {
-      return res.status(401).json({ error: "Invalid token!" });
-    }
-  } else {
-    return res.status(401).json({ error: "Token missing!" });
-  }
   next();
 };
 
