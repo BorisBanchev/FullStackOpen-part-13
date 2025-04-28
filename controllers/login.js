@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { SECRET } from "../utils/config.js";
 import { User } from "../models/index.js";
+import { Session } from "../models/index.js";
 
 const loginRouter = express.Router();
 
@@ -22,12 +23,18 @@ loginRouter.post("/", async (req, res) => {
     return res.status(401).json({ error: "Invalid username or password!" });
   }
 
+  if (user.disabled) {
+    return res.status(401).json({ error: "User account is disabled!" });
+  }
+
   const userForToken = {
     username: user.username,
     id: user.id,
   };
 
   const token = jwt.sign(userForToken, SECRET);
+
+  await Session.create({ userId: user.id, token });
 
   res.status(200).send({
     token,

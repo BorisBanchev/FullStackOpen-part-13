@@ -1,6 +1,7 @@
 import Blog from "./Blog.js";
 import User from "./User.js";
 import ReadingList from "./Readinglist.js";
+import Session from "./Session.js";
 
 User.hasMany(Blog);
 Blog.belongsTo(User);
@@ -14,4 +15,4 @@ Blog.belongsToMany(User, {
   as: "readers",
 });
 
-export { Blog, User, ReadingList };
+export { Blog, User, ReadingList, Session };
